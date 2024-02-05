@@ -5,7 +5,7 @@
 // @author       Gabriel Calderon with GPT
 // @match        https://www.jotform.com/build/*
 // @grant        none
-// @updateURL    https://raw.githubusercontent.com/YourGitHubUsername/YourRepositoryName/main/YourScriptFileName.js
+// @updateURL    https://raw.githubusercontent.com/lmsanational/JotformTweaks/main/jotform_tweaks.js
 // ==/UserScript==
 
 function highlightFormLinesWithCondition() {
