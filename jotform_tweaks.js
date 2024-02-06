@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Jotform Tweaks
-// @version      0.101
+// @version      0.102
 // @description  Create tweaks to the jotform admin interface.
 // @author       Gabriel Calderon with GPT
 // @match        https://www.jotform.com/build/*
@@ -28,27 +28,89 @@ function applyStylesForConditionsPage() {
 
 function waitForElementsOnConditionsPage() {
     console.log("waitForElementsOnConditionsPage called");
-    const observer = new MutationObserver((mutations, obs) => {
-        console.log("Mutation observer triggered for conditions page");
-        const conditionElements = document.querySelectorAll('.modules, .moodular .text-truncate, .text-truncate');
+
+    // Check if the conditionElements already exist
+    const conditionElements = document.querySelectorAll('.modules, .moodular .text-truncate, .text-truncate');
+
+    if (conditionElements.length > 0) {
+        // Elements already exist, apply styles and set up mutation observer
         console.log(`Found ${conditionElements.length} condition elements`);
+        conditionElements.forEach(el => {
+            if (el.classList.contains('text-truncate')) {
+                el.style.width = '100%';
+            }
+        });
+        console.log("Styles applied for condition elements");
 
-        if (conditionElements.length > 0) {
-            conditionElements.forEach(el => {
-                if (el.classList.contains('text-truncate')) {
-                    el.style.width = '100%';
-                }
-            });
-            console.log("Styles applied for condition elements");
-            obs.disconnect();
-        }
-    });
+        // Now that elements are found, set up a mutation observer
+        setupMutationObserver();
+    } else {
+        // Elements don't exist, set up a mutation observer to wait for them
+        const observer = new MutationObserver((mutations, obs) => {
+            console.log("Mutation observer triggered for conditions page");
+            const conditionElements = document.querySelectorAll('.modules, .moodular .text-truncate, .text-truncate');
+            console.log(`Found ${conditionElements.length} condition elements`);
 
-    observer.observe(document, {
-        childList: true,
-        subtree: true
-    });
+            if (conditionElements.length > 0) {
+                conditionElements.forEach(el => {
+                    if (el.classList.contains('text-truncate')) {
+                        el.style.width = '100%';
+                    }
+                });
+                console.log("Styles applied for condition elements");
+
+                // Now that elements are found, disconnect the observer
+                obs.disconnect();
+            }
+        });
+
+        observer.observe(document, {
+            childList: true,
+            subtree: true
+        });
+    }
 }
+
+function setupMutationObserver() {
+    console.log("Setting up mutation observer for conditions page");
+
+    const observerCallback = (mutations, obs) => {
+        // Check the URL to determine if it's still the conditions page
+        if (!isConditionsPageURL()) {
+            console.log("URL is no longer the conditions page, disconnecting observer.");
+            obs.disconnect(); // Disconnect the observer if the URL is not the conditions page
+            return;
+        }
+
+        // Handle mutations here if needed
+        const conditionElements = document.querySelectorAll('.modules, .moodular .text-truncate, .text-truncate');
+
+        conditionElements.forEach(el => {
+            if (el.classList.contains('text-truncate')) {
+                el.style.width = '100%';
+            }
+        });
+
+        console.log("Styles applied for condition elements");
+    };
+
+    const observer = new MutationObserver(observerCallback);
+
+    // Check if the URL is the conditions page before observing mutations
+    if (isConditionsPageURL()) {
+        observer.observe(document, {
+            childList: true,
+            subtree: true
+        });
+    }
+}
+
+// Helper function to check if the URL is the conditions page URL
+function isConditionsPageURL() {
+    const urlPatternConditionsPage = /^https:\/\/www\.jotform\.com\/build\/\d+\/settings\/conditions(\/.*)?$/;
+    return urlPatternConditionsPage.test(window.location.href);
+}
+
 
 function highlightFormLinesWithCondition() {
     console.log("highlightFormLinesWithCondition called");
@@ -111,14 +173,13 @@ function handleURLChange(url) {
     }
 }
 
-
 function observeURLChanges() {
     console.log("observeURLChanges called");
     let lastUrl = location.href;
     new MutationObserver(() => {
         const url = location.href;
-        console.log(`URL changed to: ${url}`);
         if (url !== lastUrl) {
+            console.log(`URL changed to: ${url}`);
             lastUrl = url;
             handleURLChange(url);
         }
