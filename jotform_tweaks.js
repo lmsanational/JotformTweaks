@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Jotform Tweaks
-// @version      0.102
+// @version      0.103
 // @description  Create tweaks to the jotform admin interface.
 // @author       Gabriel Calderon with GPT
 // @match        https://www.jotform.com/build/*
@@ -59,6 +59,9 @@ function waitForElementsOnConditionsPage() {
                 });
                 console.log("Styles applied for condition elements");
 
+                // Now that elements are found, set up a mutation observer
+                setupMutationObserver();
+
                 // Now that elements are found, disconnect the observer
                 obs.disconnect();
             }
@@ -82,16 +85,17 @@ function setupMutationObserver() {
             return;
         }
 
+        console.log("Observer callback triggered"); // Add this log statement
+
         // Handle mutations here if needed
         const conditionElements = document.querySelectorAll('.modules, .moodular .text-truncate, .text-truncate');
 
         conditionElements.forEach(el => {
             if (el.classList.contains('text-truncate')) {
                 el.style.width = '100%';
+                console.log("Style applied for condition element"); // Add this log statement
             }
         });
-
-        console.log("Styles applied for condition elements");
     };
 
     const observer = new MutationObserver(observerCallback);
@@ -104,6 +108,7 @@ function setupMutationObserver() {
         });
     }
 }
+
 
 // Helper function to check if the URL is the conditions page URL
 function isConditionsPageURL() {
