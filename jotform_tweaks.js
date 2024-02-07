@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         Jotform Tweaks
-// @version      0.103
+// @version      0.104
 // @description  Create tweaks to the jotform admin interface.
 // @author       Gabriel Calderon with GPT
 // @match        https://www.jotform.com/build/*
 // @grant        GM_addStyle
 // @updateURL    https://raw.githubusercontent.com/lmsanational/JotformTweaks/main/jotform_tweaks.js
 // ==/UserScript==
+
 
 
 console.log("Jotform Tweaks script started");
